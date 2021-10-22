@@ -1,4 +1,4 @@
-import random, string, uuid
+import uuid
 
 from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
@@ -7,7 +7,6 @@ from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
-
 
 
 # Configure application
@@ -26,8 +25,6 @@ def after_request(response):
     return response
 
 
-
-
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
@@ -39,11 +36,16 @@ db = SQL("sqlite:///notes.db")
 
 
 @app.route("/", methods=["GET", "POST"])
-@login_required
 def index():
+    return apology("HOME Under Construction")
+    
+
+
+@app.route("/dashboard", methods=["GET", "POST"])
+@login_required
+def dashboard():
     
     if request.method == "POST":
-        print(request.form)
         
         if "add_note" in request.form:
             if request.form['add_note'] == 'True':
@@ -52,16 +54,15 @@ def index():
         if "view_button" in request.form:
             return redirect(url_for('.view', noteid = request.form['view_button'] ))
         
-        print("CHECKKKKKKKKKKKKKKKKKKKKK")
-        
         db.execute(
-            "DELETE FROM notes where noteid= ?", 
+            "DELETE FROM notes WHERE userid=? and noteid=?;", 
+            session["user_id"],
             request.form['submit_button']
         )
         
         print(request.form['submit_button'])
         flash(u'Note Deleted','alert')
-        return redirect("/")
+        return redirect("/dashboard")
 
     else:
         headings = ("Sno.", "Title", "last edited", "view" , "delete ")
@@ -79,9 +80,9 @@ def index():
                 row['count'] = i
         
         if (len(data)) ==0:
-            return render_template("indexempty.html")
+            return render_template("dashempty.html")
         
-        return render_template("index.html", headings=headings, data=data)
+        return render_template("dash.html", headings=headings, data=data)
 
 
 @app.route("/add", methods=["GET", "POST"])
@@ -110,7 +111,7 @@ def add():
         )
         
         flash(u'Note Added', 'info')
-        return redirect("/")
+        return redirect("/dashboard")
         
     else:
         return render_template("add.html")
@@ -118,6 +119,7 @@ def add():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    
     """Log user in"""
 
     # Forget any user_id
@@ -137,11 +139,6 @@ def login():
         # Query database for username
         rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
 
-        # print(request.form.get("username") )
-        # print(request.form.get("password") )
-        # print(rows)
-        # print(check_password_hash(rows[0]["hash"], request.form.get("password")))
-
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
             return apology("invalid username and/or password", 403)
@@ -152,7 +149,7 @@ def login():
 
 
         # Redirect user to home page
-        return redirect("/")
+        return redirect("/dashboard")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -167,7 +164,7 @@ def logout():
     session.clear()
 
     # Redirect user to login form
-    return redirect("/")
+    return redirect("/dashboard")
 
 
 @app.route("/view", methods=["GET", "POST"])
@@ -176,10 +173,6 @@ def view():
    
     
     if request.method == "POST":
-        print("000000000000000000000000000000000")
-        print(request.form)
-        
-        print(request.args['noteid'])
         
         if request.form['noteid_edit'] != request.args['noteid']:
             return apology("not allowed")
@@ -246,7 +239,7 @@ def register():
         session["user_id"] = rows[0]["id"]
         session["username"] = rows[0]["username"]
 
-        return redirect("/")
+        return redirect("/dashboard")
 
     else:
         session.clear()
