@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Log In
+{% endblock %}
+
+{% block main %}
+
+<form action="/add" method="post">
+    
+    <div class="form-group leftText">
+      <label for="noteTitle">Note Title</label>
+      <input class="form-control" name="noteTitle" type="text" autocomplete="off">
+    </div>
+    
+    <div class="form-group leftText">
+      <label for="NoteContent">Note</label>
+      <textarea class="form-control" name="NoteContent" rows="8" type="text" ></textarea>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Add</button>
+  </form>
+
+</form>
+</div>
+
+{% endblock %}
