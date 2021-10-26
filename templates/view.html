@@ -5,8 +5,6 @@ Log In
 {% endblock %}
 
 {% block main %}
-
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-3 col-sm-12 pb-3">
@@ -37,13 +35,11 @@ Log In
         </div>
         <div class="col-md-9 col-sm-12">
             <form action="#" method="post">
-
                 <div class="form-group leftText">
                     <label for="noteTitle">Title</label>
                     <input class="form-control" name="noteTitle" type="text" autocomplete="off"
                         value="{{fdata['title']}}">
                 </div>
-
                 <div class="form-group leftText">
                     <label for="NoteContent">Note</label>
                     <textarea class="form-control" id='resize-ta' name="NoteContent" rows="8" type="text">{{fdata['note']}}</textarea>
@@ -55,28 +51,5 @@ Log In
         </div>
     </div>
 </div>
-
-<script>
-    window.onload = function () {
-
-        function calcHeight(value) {
-            let numberOfLineBreaks = (value.match(/\n/g) || []).length;
-            // min-height + lines x line-height + padding + border
-            let newHeight = 24 + numberOfLineBreaks * 24 + 13;
-            return newHeight;
-        }
-
-        
-
-        let textarea = document.getElementById('resize-ta');
-        
-        textarea.addEventListener("keyup", () => {
-            var newHeight = calcHeight(textarea.value)
-            console.log(newHeight);
-            window.scrollTo(0,99999);
-            textarea.style.height = calcHeight(textarea.value) + "px";
-        });
-    }
-</script>
 
 {% endblock %}
