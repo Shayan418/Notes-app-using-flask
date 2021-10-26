@@ -6,7 +6,7 @@ from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import apology, login_required
+from helpers import apology, login_required, longDateTime, shortDate
 
 
 # Configure application
@@ -24,6 +24,10 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+
+# Custom filters
+app.jinja_env.filters["longDateTime"] = longDateTime
+app.jinja_env.filters["shortDate"] = shortDate
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
@@ -60,7 +64,7 @@ def dashboard():
             request.form['submit_button']
         )
         
-        print(request.form['submit_button'])
+        #print(request.form['submit_button'])
         flash(u'Note Deleted','alert')
         return redirect("/dashboard")
 
@@ -171,11 +175,9 @@ def logout():
 @login_required
 def view():
    
-    
     if request.method == "POST":
-        
         if request.form['noteid_edit'] != request.args['noteid']:
-            return apology("not allowed")
+            return apology("Bad Request")
         
         db.execute(
             "UPDATE notes SET title = ? ,note = ?,edited = (DATETIME('now','localtime')) WHERE noteid = ?",
@@ -202,9 +204,9 @@ def view():
                 flag = True
             
         if flag == False:
-            return apology("not allowed")
+            return apology("Bad Request")
         
-        print(fdata)
+        #print(fdata)
         return render_template("view.html", fdata = fdata)
 
 
@@ -227,8 +229,8 @@ def register():
         if len(exist_u) == 1:
             #print("username not available")
             flash(u'Username not available', 'error')
-            return apology("passwords does not match")
-
+            return render_template("register.html")
+        
         db.execute(
             "INSERT INTO users (username, hash) VALUES(?, ?)",
             request.form.get("username"),
@@ -244,7 +246,6 @@ def register():
     else:
         session.clear()
         return render_template("register.html")
-
 
 
 def errorhandler(e):

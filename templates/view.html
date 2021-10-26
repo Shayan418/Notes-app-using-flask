@@ -9,23 +9,27 @@ Log In
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-3 col-sm-12">
+        <div class="col-md-3 col-sm-12 pb-3">
             <div class="container" id="noteinfo">
                 <div class="row">
                     <div class="col-12">
-                        <p style="font-size: large;">{{fdata['title']}}</p>
+                        <h3>{{fdata['title']}}</h3>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-12">
-                        <P>Date added</p>
-                        <p>{{fdata['creation']}}</p>
+                        <ul class="list-group">
+                            <li class="list-group-item">Date added</li>
+                            <li class="list-group-item">{{fdata['creation'] | longDateTime}}</li>
+                        </ul>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-12">
-                        <P>Last Edited</p>
-                        <p>{{fdata['edited']}}</p>
+                        <ul class="list-group">
+                            <li class="list-group-item">Last Edited</li>
+                            <li class="list-group-item">{{fdata['edited'] | longDateTime}}</li>
+                        </ul>
                     </div>
                 </div>
 
@@ -42,15 +46,37 @@ Log In
 
                 <div class="form-group leftText">
                     <label for="NoteContent">Note</label>
-                    <textarea class="form-control" name="NoteContent" rows="8" type="text">{{fdata['note']}}</textarea>
+                    <textarea class="form-control" id='resize-ta' name="NoteContent" rows="8" type="text">{{fdata['note']}}</textarea>
                 </div>
 
-                <button class="btn btn-primary" type="submit" name="noteid_edit" value="{{ fdata['noteid'] }}">Edit</button>
+                <button class="btn btn-primary" type="submit" name="noteid_edit"
+                    value="{{ fdata['noteid'] }}">Edit</button>
             </form>
         </div>
     </div>
 </div>
 
+<script>
+    window.onload = function () {
 
+        function calcHeight(value) {
+            let numberOfLineBreaks = (value.match(/\n/g) || []).length;
+            // min-height + lines x line-height + padding + border
+            let newHeight = 24 + numberOfLineBreaks * 24 + 13;
+            return newHeight;
+        }
+
+        
+
+        let textarea = document.getElementById('resize-ta');
+        
+        textarea.addEventListener("keyup", () => {
+            var newHeight = calcHeight(textarea.value)
+            console.log(newHeight);
+            window.scrollTo(0,99999);
+            textarea.style.height = calcHeight(textarea.value) + "px";
+        });
+    }
+</script>
 
 {% endblock %}
