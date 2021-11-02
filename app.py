@@ -73,7 +73,7 @@ def dashboard():
         flash(u'Note Deleted','alert')
         return redirect("/dashboard")
 
-    # executes when no form input is provided
+    # User reached route via GET or no POST input was provided
     else:
         
         # tuple for headers for table in dashbord
@@ -132,7 +132,7 @@ def add():
         flash(u'Note Added', 'info')
         return redirect("/dashboard")
     
-    # executes when no form input is provided
+    # User reached route via GET or no POST input was provided
     else:
         #renders page to add note
         return render_template("add.html")
