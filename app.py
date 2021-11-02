@@ -39,53 +39,64 @@ Session(app)
 db = SQL("sqlite:///notes.db")
 
 
+#route for index
 @app.route("/", methods=["GET", "POST"])
 def index():
     return apology("HOME Under Construction")
     
 
-
+#route for dashboard
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
     
+    #executes when input recieved from form
     if request.method == "POST":
         
+        # redirects to /add if add button is clicked
         if "add_note" in request.form:
             if request.form['add_note'] == 'True':
                 return redirect("/add")
         
+        #redirects to /view with note id if view is clicked
         if "view_button" in request.form:
             return redirect(url_for('.view', noteid = request.form['view_button'] ))
         
+        # executes delete command when delete button is pressed validating with user_id
         db.execute(
             "DELETE FROM notes WHERE userid=? and noteid=?;", 
             session["user_id"],
             request.form['submit_button']
         )
         
-        #print(request.form['submit_button'])
+        #flash delete alert and reloads the page
         flash(u'Note Deleted','alert')
         return redirect("/dashboard")
 
+    # executes when no form input is provided
     else:
+        
+        # tuple for headers for table in dashbord
         headings = ("Sno.", "Title", "last edited", "view" , "delete ")
 
+        # extracting data to send for rendering table in dashboard 
         data = db.execute(
             "SELECT noteid, title, edited FROM notes WHERE Userid = ?",
             session["user_id"]
         )
         
-        
+        # adding serial number in data for display
         if len(data) > 0:
             i = 0
             for row in data:
                 i += 1 
                 row['count'] = i
         
-        if (len(data)) ==0:
+        # render dashempty if there is no data
+        if (len(data)) == 0:
             return render_template("dashempty.html")
         
+        # otherwise render dash.html passing heading and data
         return render_template("dash.html", headings=headings, data=data)
 
 
@@ -93,8 +104,10 @@ def dashboard():
 @login_required
 def add():
     
+    #executes when input recieved from form
     if request.method == "POST":
         
+        #validating form input are not empty
         if not request.form.get('noteTitle'):
             flash(u'Empty title not Allowed', 'error')
             return render_template("add.html")
@@ -103,9 +116,10 @@ def add():
             flash(u'Empty note not Allowed', 'error')
             return render_template("add.html")
         
-        
+        # creating uuid for note 
         uuid_note_id = str(uuid.uuid4())
-               
+          
+        # insert into database 
         db.execute(
             "INSERT INTO notes (noteid ,userid, title, note) VALUES(?, ?, ?, ?)",
             uuid_note_id,
@@ -114,10 +128,13 @@ def add():
             request.form.get('NoteContent')
         )
         
+        # flash confirmation and retirect to dashboard
         flash(u'Note Added', 'info')
         return redirect("/dashboard")
-        
+    
+    # executes when no form input is provided
     else:
+        #renders page to add note
         return render_template("add.html")
 
 
@@ -129,7 +146,7 @@ def login():
     # Forget any user_id
     session.clear()
 
-    # User reached route via POST (as by submitting a form via POST)
+    #` User reached route via POST (as by submitting a form v`ia POST)
     if request.method == "POST":
 
         # Ensure username was submitted
@@ -152,10 +169,10 @@ def login():
         session["username"] = rows[0]["username"]
 
 
-        # Redirect user to home page
+        # Redirect user to dashboard
         return redirect("/dashboard")
 
-    # User reached route via GET (as by clicking a link or via redirect)
+    # User reached route via GET or no POST input was provided
     else:
         return render_template("login.html")
 
@@ -175,10 +192,14 @@ def logout():
 @login_required
 def view():
    
+    #` User reached route via POST (as by submitting a form v`ia POST)
     if request.method == "POST":
+        
+        # validating note id is same as the one in url
         if request.form['noteid_edit'] != request.args['noteid']:
             return apology("Bad Request")
         
+        # update record and flash alert
         db.execute(
             "UPDATE notes SET title = ? ,note = ?,edited = (DATETIME('now','localtime')) WHERE noteid = ?",
             request.form.get('noteTitle'),
@@ -187,62 +208,77 @@ def view():
         )
         flash(u'Note Edited', 'info')
        
+        # reload view page to see updated changes
         return redirect(request.url)
     
+    # User reached route via GET or no POST input was provided
     else:
         noteid = request.args['noteid']
-    
+
+        # extract notes for current user
         data = db.execute(
                 "SELECT noteid, title, note, creation, edited FROM notes WHERE Userid = ?",
                 session["user_id"]
             )
-        
+       
+        # validating noteid exists in database with same user        
         flag = False
         for row in data:
             if noteid == row['noteid']:
                 fdata = row
                 flag = True
-            
+        
+        # return bad request on url tampering
         if flag == False:
             return apology("Bad Request")
         
-        #print(fdata)
+        #pass note data to view.html
         return render_template("view.html", fdata = fdata)
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Register user"""
+    
+    #` User reached route via POST (as by submitting a form v`ia POST)
     if request.method == "POST":
-
+        
+        # Ensure username was submitted
         if not request.form.get("username"):
             return apology("must provide username")
 
+        #Ensure password and confirmation was submitted
         elif not request.form.get("password"):
             if not request.form.get("confirmation"):
                 return apology("missing passwords")
 
+        # Return apology if password and confirmation does not match
         elif request.form.get("password") != request.form.get("confirmation"):
             return apology("passwords does not match")
 
+        # Ensure same username does not already exist in database
         exist_u = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
         if len(exist_u) == 1:
             #print("username not available")
             flash(u'Username not available', 'error')
             return render_template("register.html")
         
+        # Insert user into databse along with hashed password 
         db.execute(
             "INSERT INTO users (username, hash) VALUES(?, ?)",
             request.form.get("username"),
             generate_password_hash(request.form.get("password"))
         )
+        
+        #Extract registered user row
         rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
-
+        
+        #Pass userid and username to session variable for 
         session["user_id"] = rows[0]["id"]
         session["username"] = rows[0]["username"]
 
         return redirect("/dashboard")
-
+    
+    # User reached route via GET or no POST input was provided
     else:
         session.clear()
         return render_template("register.html")

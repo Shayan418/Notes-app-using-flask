@@ -9,7 +9,6 @@ window.onload = function () {
     
     textarea.addEventListener("keyup", () => {
         var newHeight = calcHeight(textarea.value)
-        console.log(newHeight);
         window.scrollTo(0,99999);
         textarea.style.height = calcHeight(textarea.value) + "px";
     });
