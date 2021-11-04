@@ -42,7 +42,7 @@ db = SQL("sqlite:///notes.db")
 #route for index
 @app.route("/", methods=["GET", "POST"])
 def index():
-    return apology("HOME Under Construction")
+    return render_template('index.html')
     
 
 #route for dashboard
@@ -146,7 +146,7 @@ def login():
     # Forget any user_id
     session.clear()
 
-    #` User reached route via POST (as by submitting a form v`ia POST)
+    #` User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
 
         # Ensure username was submitted
@@ -192,7 +192,7 @@ def logout():
 @login_required
 def view():
    
-    #` User reached route via POST (as by submitting a form v`ia POST)
+    # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         
         # validating note id is same as the one in url
@@ -239,14 +239,14 @@ def view():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     
-    #` User reached route via POST (as by submitting a form v`ia POST)
+    # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         
         # Ensure username was submitted
         if not request.form.get("username"):
             return apology("must provide username")
 
-        #Ensure password and confirmation was submitted
+        # Ensure password and confirmation was submitted
         elif not request.form.get("password"):
             if not request.form.get("confirmation"):
                 return apology("missing passwords")
