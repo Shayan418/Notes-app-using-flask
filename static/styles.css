@@ -1,12 +1,10 @@
-nav .navbar-brand
-{
+nav .navbar-brand {
     /* size for brand */
     font-size: xx-large;
 }
 
 
-main .ctrl
-{
+main .ctrl {
     /* Center form controls */
     display: inline-block;
 
@@ -14,8 +12,7 @@ main .ctrl
     width: auto;
 }
 
-main
-{
+main {
     /* Scroll horizontally as needed */
     overflow-x: auto;
 
@@ -23,85 +20,92 @@ main
     text-align: center;
 }
 
-main img
-{
+main img {
     /* Constrain images on small screens */
     max-width: 100%;
 }
 
-main table{
+main table {
 
     text-align: left;
 }
 
-body{
+body {
     background: #202124;
 }
 
-p, label, h1, h3, h2, ul>li{
+p,
+label,
+h1,
+h3,
+h2,
+h4,
+ul>li {
     color: #F9F9F9;
 }
 
 
-.leftText{
+.leftText {
     text-align: left;
 }
 
 
-label{
+label {
     font-size: large;
 }
 
-.form-control, .form-control:focus {
-    color :#F7F8FA ;
-    background-color: #303134 ;
+.form-control,
+.form-control:focus {
+    color: #F7F8FA;
+    background-color: #303134;
 }
 
-.dropdown-menu{
+.dropdown-menu {
     background-color: #343A40;
 }
 
-.dropdown-item{
+.dropdown-item {
     color: #F7F8FA
 }
 
-.dropdown-item:hover, .list-group-item {
+.dropdown-item:hover,
+.list-group-item {
     color: #F7F8FA;
     background-color: #2F353A;
 }
 
-.show > .dropdown-menu {
+.show>.dropdown-menu {
     max-height: 900px;
     visibility: visible;
-  }
-  
-  .dropdown-menu {
+}
+
+.dropdown-menu {
     display: block;
     max-height: 0;
     visibility: hidden;
     transition: all 0.5s ease-in-out;
     overflow: hidden;
-  }
+}
 
-  #noteinfo{
-      text-align: center;
-  }
+#noteinfo {
+    text-align: center;
+}
 
-.table{
+.table {
     margin-bottom: 0;
 }
 
-#tableCard{
+#tableCard {
     margin-bottom: 1rem;
 }
 
-textarea.form-control{
-    resize: vertical; 
+textarea.form-control {
+    resize: vertical;
     max-height: 800px;
     line-height: 24px;
 }
 
-textarea.form-control::-webkit-scrollbar{
+textarea.form-control::-webkit-scrollbar {
     display: none;
 
 }

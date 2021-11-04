@@ -1,12 +1,12 @@
 import uuid
-
+import os
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify, make_response
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import apology, login_required, longDateTime, shortDate
+from helpers import apology, login_required, longDateTime, shortDate, getWeather
 
 
 # Configure application
@@ -38,6 +38,8 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///notes.db")
 
+if not os.environ.get("OPEN_WEATHER_API"):
+    raise RuntimeError("OPEN_WEATHER_API not set")
 
 #route for index
 @app.route("/", methods=["GET", "POST"])
@@ -283,7 +285,19 @@ def register():
         session.clear()
         return render_template("register.html")
 
-
+@app.route("/api/ip", methods=["POST"])
+def api():
+    if request.method == 'POST':
+        ipinfo = request.json
+        print(ipinfo['city'])
+        
+        weatherdata = getWeather(ipinfo)
+        print(weatherdata)
+        res = make_response(jsonify(weatherdata), 200)
+        return res
+        
+    
+    
 def errorhandler(e):
     """Handle error"""
     if not isinstance(e, HTTPException):

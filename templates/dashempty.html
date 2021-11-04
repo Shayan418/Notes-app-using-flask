@@ -1,15 +1,29 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Log In
+Log In
 {% endblock %}
 
 {% block main %}
+<script src="/static/script2.js"></script>
+<div class="container">
+    <div class="row align-items-center">
+        <img src="/static/placeholder.png" id="celestialBody" aria-hidden="true" width='80' height="70"></img>
+        <h3 id="temp">
+            </h2>
+            <h3 id="celcius">
+                </h2>
+    </div>
+    <div class="row align-items-center">
+        <h4 id="city">
+            </h3>
+    </div>
+</div>
 
 <form action="/dashboard" method="post">
-<h1>No Notes To View</h1>
-<h3>Click add note to continue</h3>
-<button class="btn btn-primary" name="add_note" type="submit" value='True'>Add Note</button>
+    <h1>No Notes To View</h1>
+    <h3>Click add note to continue</h3>
+    <button class="btn btn-primary" name="add_note" type="submit" value='True'>Add Note</button>
 </form>
 
 {% endblock %}

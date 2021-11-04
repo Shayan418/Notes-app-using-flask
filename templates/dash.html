@@ -5,6 +5,20 @@ Log In
 {% endblock %}
 
 {% block main %}
+<script src="/static/script2.js"></script>
+<div class="container">
+    <div class="row align-items-center">
+        <img src="/static/placeholder.png" id="celestialBody" aria-hidden="true" width='80' height="70"></img>
+        <h3 id="temp">
+            </h2>
+            <h3 id="celcius">
+                </h2>
+    </div>
+    <div class="row align-items-center">
+        <h4 id="city">
+            </h3>
+    </div>
+</div>
 
 <form action="/dashboard" method="post">
     <div class="card bg-dark p-1" id="tableCard">
@@ -22,8 +36,10 @@ Log In
                     <td> {{row['count']}} </td>
                     <td> {{row['title']}} </td>
                     <td> {{row['edited'] | shortDate}} </td>
-                    <td> <button class="btn btn-primary" type="submit" name="view_button" value="{{row['noteid']}}"><i class="fa fa-sticky-note"></i></button> </td>
-                    <td> <button class="btn btn-primary" type="submit" name="submit_button" value="{{row['noteid']}}"><i class="fa fa-trash"></i></button></td>
+                    <td> <button class="btn btn-primary" type="submit" name="view_button" value="{{row['noteid']}}"><i
+                                class="fa fa-sticky-note"></i></button> </td>
+                    <td> <button class="btn btn-primary" type="submit" name="submit_button" value="{{row['noteid']}}"><i
+                                class="fa fa-trash"></i></button></td>
                 </tr>
                 {% endfor %}
             </tbody>
