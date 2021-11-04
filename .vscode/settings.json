@@ -1,4 +1,4 @@
 {
     "python.pythonPath": "c:\\Users\\shayan\\C_Projects\\BCA_SEM_5\\python\\Project\\env\\Scripts\\python.exe",
-    "python.formatting.provider": "black"
+    "python.formatting.provider": "autopep8"
 }
