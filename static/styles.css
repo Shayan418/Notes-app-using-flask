@@ -109,3 +109,15 @@ textarea.form-control::-webkit-scrollbar {
     display: none;
 
 }
+
+#weatherContainer {
+    z-index: -1;
+    position: relative;
+}
+
+
+@media (min-width :992px) {
+    #weatherContainer {
+        position: absolute;
+    }
+}

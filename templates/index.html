@@ -6,7 +6,7 @@ Apology
 
 {% block main %}
 <script src="/static/script2.js"></script>
-<div class="container">
+<div class="container" id="weatherContainer">
     <div class="row align-items-center">
         <img src="/static/placeholder.png" id="celestialBody" aria-hidden="true" width='80' height="70"></img>
         <h3 id="temp">
@@ -20,7 +20,7 @@ Apology
     </div>
 </div>
 
-<main class="container-fluid">
+<main class="container-fluid" style="z-index: 99; position: relative;">
     <div class="row align-items-center">
         <div class="col-md-5 order-2 order-md-1">
             <div class="row mt-2">
@@ -49,7 +49,7 @@ Apology
                 </div>
             </div>
         </div>
-        <div class="col-md-7 col-sm-12 order-1 order-md-2">
+        <div class="col-md-7 col-sm-12 order-1 order-md-2 ">
             <img src="/static/—Pngtree—beautiful yellow note_4583281.png" class="img-fluid" alt="notes png image">
             <h3 class="mt-n4 mb-4">Notes app with CRUD functionality</h3>
         </div>
