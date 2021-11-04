@@ -5,9 +5,8 @@ Log In
 {% endblock %}
 
 {% block main %}
-
+<script src="/static/script.js"></script>
 <form action="/add" method="post">
-    
     <div class="form-group leftText">
       <label for="noteTitle">Note Title</label>
       <input class="form-control" name="noteTitle" type="text" autocomplete="off">
@@ -15,7 +14,7 @@ Log In
     
     <div class="form-group leftText">
       <label for="NoteContent">Note</label>
-      <textarea class="form-control" name="NoteContent" rows="8" type="text" ></textarea>
+      <textarea id='resize-ta' class="form-control" name="NoteContent" rows="8" type="text" ></textarea>
     </div>
 
     <button class="btn btn-primary" type="submit">Add</button>
