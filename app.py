@@ -77,13 +77,14 @@ def register():
         db.execute(
             "INSERT INTO users (username, hash) VALUES(?, ?)",
             request.form.get("username"),
+            # saving password as hash
             generate_password_hash(request.form.get("password"))
         )
         
         #Extract registered user row
         rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
         
-        #Pass userid and username to session variable for 
+        #Pass userid and username to session variable to keep track of current user
         session["user_id"] = rows[0]["id"]
         session["username"] = rows[0]["username"]
 
@@ -98,8 +99,6 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    
-    """Log user in"""
 
     # Forget any user_id
     session.clear()
@@ -295,10 +294,7 @@ def view():
 def api():
     if request.method == 'POST':
         ipinfo = request.json
-        print(ipinfo['city'])
-        
         weatherdata = getWeather(ipinfo)
-        print(weatherdata)
         res = make_response(jsonify(weatherdata), 200)
         return res
         

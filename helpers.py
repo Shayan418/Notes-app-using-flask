@@ -43,7 +43,6 @@ def getWeather(ipinfo):
         city = ipinfo["city"]
         state = ipinfo["region"]
         country = ipinfo["country"]
-        print(city,state,country)
         url = f"http://api.openweathermap.org/data/2.5/weather?q={city},{state},{country}&appid={api_key}&units=metric"
         response = requests.get(url)
         response.raise_for_status()
