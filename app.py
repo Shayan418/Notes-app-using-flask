@@ -207,7 +207,7 @@ def dashboard():
 def add():
     
     #executes when input recieved from user
-    #edit button is pressed
+    #add button is pressed
     if request.method == "POST":
         
         #validating form input are not empty
