@@ -45,7 +45,106 @@ if not os.environ.get("OPEN_WEATHER_API"):
 @app.route("/", methods=["GET", "POST"])
 def index():
     return render_template('index.html')
+ 
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
     
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        
+        # Ensure username was submitted
+        if not request.form.get("username"):
+            return apology("must provide username")
+
+        # Ensure password and confirmation was submitted
+        elif not request.form.get("password"):
+            if not request.form.get("confirmation"):
+                return apology("missing passwords")
+
+        # Return apology if password and confirmation does not match
+        elif request.form.get("password") != request.form.get("confirmation"):
+            return apology("passwords does not match")
+
+        # Ensure same username does not already exist in database
+        exist_u = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
+        if len(exist_u) == 1:
+            #print("username not available")
+            flash(u'Username not available', 'error')
+            return render_template("register.html")
+        
+        # Insert user into databse along with hashed password 
+        db.execute(
+            "INSERT INTO users (username, hash) VALUES(?, ?)",
+            request.form.get("username"),
+            generate_password_hash(request.form.get("password"))
+        )
+        
+        #Extract registered user row
+        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
+        
+        #Pass userid and username to session variable for 
+        session["user_id"] = rows[0]["id"]
+        session["username"] = rows[0]["username"]
+
+        return redirect("/dashboard")
+    
+    # User reached route via GET or no POST input was provided
+    else:
+        session.clear()
+        return render_template("register.html")
+
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    
+    """Log user in"""
+
+    # Forget any user_id
+    session.clear()
+
+    #` User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+
+        # Ensure username was submitted
+        if not request.form.get("username"):
+            return apology("must provide username", 403)
+
+        # Ensure password was submitted
+        elif not request.form.get("password"):
+            return apology("must provide password", 403)
+
+        # Query database for username
+        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
+
+        # Ensure username exists and password is correct
+        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+            return apology("invalid username and/or password", 403)
+
+        # Remember which user has logged in
+        session["user_id"] = rows[0]["id"]
+        session["username"] = rows[0]["username"]
+
+
+        # Redirect user to dashboard
+        return redirect("/dashboard")
+
+    # User reached route via GET or no POST input was provided
+    else:
+        return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/dashboard")
+
 
 #route for dashboard
 @app.route("/dashboard", methods=["GET", "POST"])
@@ -140,56 +239,6 @@ def add():
         return render_template("add.html")
 
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    
-    """Log user in"""
-
-    # Forget any user_id
-    session.clear()
-
-    #` User reached route via POST (as by submitting a form via POST)
-    if request.method == "POST":
-
-        # Ensure username was submitted
-        if not request.form.get("username"):
-            return apology("must provide username", 403)
-
-        # Ensure password was submitted
-        elif not request.form.get("password"):
-            return apology("must provide password", 403)
-
-        # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
-
-        # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return apology("invalid username and/or password", 403)
-
-        # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
-        session["username"] = rows[0]["username"]
-
-
-        # Redirect user to dashboard
-        return redirect("/dashboard")
-
-    # User reached route via GET or no POST input was provided
-    else:
-        return render_template("login.html")
-
-
-@app.route("/logout")
-def logout():
-    """Log user out"""
-
-    # Forget any user_id
-    session.clear()
-
-    # Redirect user to login form
-    return redirect("/dashboard")
-
-
 @app.route("/view", methods=["GET", "POST"])
 @login_required
 def view():
@@ -238,52 +287,6 @@ def view():
         return render_template("view.html", fdata = fdata)
 
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    
-    # User reached route via POST (as by submitting a form via POST)
-    if request.method == "POST":
-        
-        # Ensure username was submitted
-        if not request.form.get("username"):
-            return apology("must provide username")
-
-        # Ensure password and confirmation was submitted
-        elif not request.form.get("password"):
-            if not request.form.get("confirmation"):
-                return apology("missing passwords")
-
-        # Return apology if password and confirmation does not match
-        elif request.form.get("password") != request.form.get("confirmation"):
-            return apology("passwords does not match")
-
-        # Ensure same username does not already exist in database
-        exist_u = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
-        if len(exist_u) == 1:
-            #print("username not available")
-            flash(u'Username not available', 'error')
-            return render_template("register.html")
-        
-        # Insert user into databse along with hashed password 
-        db.execute(
-            "INSERT INTO users (username, hash) VALUES(?, ?)",
-            request.form.get("username"),
-            generate_password_hash(request.form.get("password"))
-        )
-        
-        #Extract registered user row
-        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
-        
-        #Pass userid and username to session variable for 
-        session["user_id"] = rows[0]["id"]
-        session["username"] = rows[0]["username"]
-
-        return redirect("/dashboard")
-    
-    # User reached route via GET or no POST input was provided
-    else:
-        session.clear()
-        return render_template("register.html")
 
 @app.route("/api/ip", methods=["POST"])
 def api():
