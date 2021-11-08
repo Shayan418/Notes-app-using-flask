@@ -152,6 +152,7 @@ def logout():
 def dashboard():
     
     #executes when input recieved from form
+    #add / view / delete button is pressed
     if request.method == "POST":
         
         # redirects to /add if add button is clicked
@@ -205,7 +206,8 @@ def dashboard():
 @login_required
 def add():
     
-    #executes when input recieved from form
+    #executes when input recieved from user
+    #edit button is pressed
     if request.method == "POST":
         
         #validating form input are not empty
@@ -244,6 +246,7 @@ def add():
 def view():
    
     # User reached route via POST (as by submitting a form via POST)
+    # edit button is pressed
     if request.method == "POST":
         
         # validating note id is same as the one in url
