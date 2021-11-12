@@ -13,11 +13,6 @@ def apology(message, code=400):
 
 
 def login_required(f):
-    """
-    Decorate routes to require login.
-
-    https://flask.palletsprojects.com/en/1.1.x/patterns/viewdecorators/
-    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
@@ -51,6 +46,7 @@ def getWeather(ipinfo):
 
     # Parse response
     try:
+        day = 'true'
         data = response.json()
         if data['dt'] < data['sys']['sunrise'] or data['dt'] > data['sys']['sunset']:
             day = 'false'
