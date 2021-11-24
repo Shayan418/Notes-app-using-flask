@@ -6,7 +6,7 @@ from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import apology, login_required, longDateTime, shortDate, getWeather
+from helpers import apology, login_required, longDateTime, shortDate, getWeather, usernameClean
 
 
 # Configure application
@@ -33,6 +33,7 @@ app.jinja_env.filters["shortDate"] = shortDate
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config['SQLALCHEMY_ECHO'] = True
 Session(app)
 
 # Configure CS50 Library to use SQLite database
@@ -170,7 +171,6 @@ def login():
         session["user_id"] = rows[0]["id"]
         session["username"] = rows[0]["username"]
 
-
         # Redirect user to dashboard
         return redirect("/dashboard")
 
@@ -188,6 +188,78 @@ def logout():
 
     # Redirect user to login form
     return redirect("/dashboard")
+
+
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    if request.method == "POST":
+        if "passwordUpdate" in request.form:
+            passwords = []
+            passwords.append(request.form.get("passwordCurrent"))
+            passwords.append(request.form.get("password")) 
+            passwords.append(request.form.get("confirmation"))
+            print(passwords)
+            if '' in passwords:
+                return apology("Missing fields")
+            val = passwordUpdate(passwords)
+            if val == 0:
+                flash(u'wrong password', 'info')
+                return render_template("profile.html")
+            elif val == 1:
+                flash(u'passwords do not match', 'info')
+                return render_template("profile.html")
+            else:
+                flash(u'password updated', 'info')
+                return redirect("/dashboard")
+
+            
+        if "usernameUpdate" in request.form:
+            if not request.form.get("username") or not request.form.get("password"):
+                return apology("Missing fields")
+            
+            rows = db.execute("SELECT * FROM users WHERE username = ?", session["username"])
+            
+            if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+                return apology("wrong password")
+            
+            print(usernameClean(request.form.get("username")))
+            print(len(request.form.get("username")))
+            if rows[0]['username'] == request.form.get("username") or usernameClean(request.form.get("username")) == False:
+                return apology("Username unacceptable")
+            
+            db.execute("UPDATE users SET username = ? WHERE username = ?",
+            request.form.get("username"),
+            session["username"]
+            )
+            session["username"] = request.form.get("username")
+            flash(u'username updated', 'info')
+            return redirect("/dashboard")
+
+            
+    else:
+        return render_template("profile.html")
+    
+
+
+def passwordUpdate(passwords):
+    print (passwords)
+    
+    rows = db.execute("SELECT * FROM users WHERE username = ?", session["username"])
+
+    # Ensure username exists and password is correct
+    if len(rows) != 1 or not check_password_hash(rows[0]["hash"], passwords[0]):
+        return 0
+    
+    elif passwords[1] != passwords[2]:
+        return 1
+    
+    db.execute(
+            "UPDATE users SET hash = ? WHERE username = ?",
+            generate_password_hash(passwords[1]),
+            session["username"]
+        )
+    return
 
 
 @app.route("/view", methods=["GET", "POST"])
@@ -288,14 +360,21 @@ def register():
 @app.route("/api/ip", methods=["POST"])
 def api():
     if request.method == 'POST':
-        ipinfo = request.json
-        print(ipinfo['city'])
-        
+        ipinfo = request.json        
         weatherdata = getWeather(ipinfo)
         print(weatherdata)
         res = make_response(jsonify(weatherdata), 200)
         return res
-        
+    
+@app.route("/api/username", methods=["POST"])
+def apiUsername():
+    if request.method == 'POST':
+        paylode = request.json
+        if usernameClean(paylode):
+            exist_u = db.execute("SELECT * FROM users WHERE username = ?", paylode)
+            res = make_response(jsonify(len(exist_u)), 200)
+            return res
+        return make_response('-1', 200)
     
     
 def errorhandler(e):

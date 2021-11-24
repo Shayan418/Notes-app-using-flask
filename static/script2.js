@@ -1,6 +1,8 @@
 window.onload = function () {
-    fetch("https://ipinfo.io/json").then(
-        (response) => response.json()
+    fetch("https://ipinfo.io/json" ,{
+        method: "GET",
+    })
+    .then((response) => response.json()
     ).then((jsonResponse) => {
 
         fetch(`${window.origin}/api/ip`, {

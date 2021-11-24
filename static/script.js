@@ -1,3 +1,5 @@
+//source: https://codepen.io/chriscoyier/pen/XWbqpzP
+
 window.onload = function () {
     function calcHeight(value) {
         let numberOfLineBreaks = (value.match(/\n/g) || []).length;
