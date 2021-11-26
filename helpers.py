@@ -25,20 +25,20 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def longDateTime(input):
+def dateConvert(input):
     date_time = list(map(int,re.split('-| |:', input)))
     dt_tm = datetime.datetime(date_time[0], date_time[1], date_time[2], date_time[3], date_time[4], date_time[5])
-    return(dt_tm.strftime("%d %B %Y %I:%M%p"))
+    return dt_tm
+
+def longDateTime(input):
+        return(dateConvert(input).strftime("%d %B %Y %I:%M%p"))
 
 def shortDate(input):
-    date_time = list(map(int,re.split('-| |:', input)))
-    dt_tm = datetime.datetime(date_time[0], date_time[1], date_time[2], date_time[3], date_time[4], date_time[5])
-    return(dt_tm.strftime("%d %b %y"))
+        return(dateConvert(input).strftime("%d %b %y"))
 
 def usernameClean(input):
     if re.match("^[A-Za-z0-9]*$", input) and len(input) >= 4:
         return True
-    print(input)
     return False
 
 def getWeather(ipinfo):

@@ -22,7 +22,6 @@ window.onload = function () {
                 }
 
                 responce.json().then(function (data) {
-                    console.log(data)
                     document.getElementById("city").innerHTML = data.city
                     document.getElementById("temp").innerHTML = data.temp
                     document.getElementById("celcius").innerHTML = "&#8451"

@@ -199,7 +199,6 @@ def profile():
             passwords.append(request.form.get("passwordCurrent"))
             passwords.append(request.form.get("password")) 
             passwords.append(request.form.get("confirmation"))
-            print(passwords)
             if '' in passwords:
                 return apology("Missing fields")
             val = passwordUpdate(passwords)
@@ -223,8 +222,7 @@ def profile():
             if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
                 return apology("wrong password")
             
-            print(usernameClean(request.form.get("username")))
-            print(len(request.form.get("username")))
+
             if rows[0]['username'] == request.form.get("username") or usernameClean(request.form.get("username")) == False:
                 return apology("Username unacceptable")
             
@@ -331,7 +329,7 @@ def register():
 
         # Ensure same username does not already exist in database
         exist_u = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
-        if len(exist_u) == 1:
+        if len(exist_u) == 1 or usernameClean(request.form.get("username")) == False:
             #print("username not available")
             flash(u'Username not available', 'error')
             return render_template("register.html")
@@ -362,7 +360,6 @@ def api():
     if request.method == 'POST':
         ipinfo = request.json        
         weatherdata = getWeather(ipinfo)
-        print(weatherdata)
         res = make_response(jsonify(weatherdata), 200)
         return res
     
