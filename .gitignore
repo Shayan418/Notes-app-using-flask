@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 # user added
-.vscode/
-.db
+.vscode
+*.db
