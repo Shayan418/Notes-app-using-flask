@@ -130,4 +130,4 @@ dmypy.json
 
 # user added
 .vscode
-*.sql
+*.db
